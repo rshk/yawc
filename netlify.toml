@@ -1,0 +1,7 @@
+[build]
+    # base    = ""
+    publish = "build"
+    command = "yarn build"
+
+[build.environment]
+    API_URL = "https://graphqlbin.org/graphql"

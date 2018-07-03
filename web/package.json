@@ -1,0 +1,29 @@
+{
+  "name": "yawc",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "build": "neutrino build",
+    "start": "neutrino start",
+    "lint": "neutrino lint",
+    "test": "neutrino test"
+  },
+  "dependencies": {
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-hot-loader": "^4.3.3"
+  },
+  "devDependencies": {
+    "@neutrinojs/jest": "^8.3.0",
+    "@neutrinojs/react": "^8.3.0",
+    "@neutrinojs/standardjs": "^8.3.0",
+    "@neutrinojs/style-loader": "^8.3.0",
+    "autoprefixer": "^8.6.4",
+    "neutrino": "^8.3.0",
+    "node-sass": "^4.9.0",
+    "postcss-loader": "^2.1.5",
+    "sass-loader": "^7.0.3"
+  }
+}
