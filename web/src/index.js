@@ -2,6 +2,8 @@ import React from 'react';
 import {render} from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
 import App from './App';
+import './index.global.scss';
+
 
 const root = document.getElementById('root');
 const load = () => render((

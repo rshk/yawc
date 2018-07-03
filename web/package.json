@@ -10,6 +10,7 @@
     "test": "neutrino test"
   },
   "dependencies": {
+    "bootstrap": "^4.1.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
