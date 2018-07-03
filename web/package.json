@@ -16,11 +16,17 @@
     "react-hot-loader": "^4.3.3"
   },
   "devDependencies": {
+    "@neutrinojs/eslint": "^8.3.0",
     "@neutrinojs/jest": "^8.3.0",
     "@neutrinojs/react": "^8.3.0",
     "@neutrinojs/standardjs": "^8.3.0",
     "@neutrinojs/style-loader": "^8.3.0",
     "autoprefixer": "^8.6.4",
+    "eslint-config-react-app": "^2.1.0",
+    "eslint-plugin-flowtype": "^2.49.3",
+    "eslint-plugin-import": "^2.6.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
     "neutrino": "^8.3.0",
     "node-sass": "^4.9.0",
     "postcss-loader": "^2.1.5",

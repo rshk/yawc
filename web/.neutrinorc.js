@@ -65,5 +65,14 @@ module.exports = {
 
         // Load env vars and pass them to client-side js
         ['@neutrinojs/env', ['API_URL']],
+
+        // Configure eslint
+        ['@neutrinojs/eslint', {
+            eslint: {
+                plugins: ['import', 'flowtype', 'jsx-a11y', 'react'],
+                rules: {},
+                baseConfig: {extends: ['eslint-config-react-app']},
+            },
+        }],
     ],
 };
