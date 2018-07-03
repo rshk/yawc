@@ -1,0 +1,15 @@
+.LoginPage {
+    background: #444;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.LoginForm {
+    width: 600px;
+    background: #fff;
+    box-shadow: #111 10px 10px 0;
+    padding: 20px;
+}

@@ -8,9 +8,12 @@ module.exports = {
                 https: false,
             },
             html: {
-                title: 'react-neutrino-starter-rshk'
+                title: 'yawc'
             }
         }],
+        (neutrino)=> {
+            neutrino.config.output.publicPath("/");
+        },
         '@neutrinojs/jest',
         ['@neutrinojs/style-loader', {
             test: /\.global\.(css|sass|scss)$/,

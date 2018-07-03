@@ -1,0 +1,92 @@
+$dark: #333;
+$border: solid 1px $dark;
+$border-light: dashed 1px #aaa;
+
+.Container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.Title {
+    padding: 10px 16px;
+    background: #111;
+    color: #fff;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        font-size: 1.6em;
+        margin: 0;
+    }
+}
+
+.Chat {
+    flex: 1;
+    background: #eee;
+    display: flex;
+    flex-direction: row;
+}
+
+.ChannelSelector {
+    $bg: $dark;
+    $fg: #fff;
+
+    flex: 1;
+    background: $bg;
+    color: $fg;
+
+    > a {
+        color: $fg;
+
+        &:hover, &:focus {
+            color: #eee;
+            background: #444;
+            outline: none;
+        }
+    }
+
+    > a:global(.active) {
+        background: $fg;
+        color: $bg;
+    }
+}
+
+.ChatChannel {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+
+    .ChatMessages {
+        flex: 1;
+        background: #fff;
+        padding: 10px;
+    }
+
+    .ChatInputBar {
+        border-top: $border-light;
+        display: flex;
+
+        form {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+
+            input[type="text"] {
+                flex: 1;
+                padding: 10px;
+                border: none;
+                background: #fff;
+                color: #000;
+
+                &:focus {
+                    background: #ffe;
+                    outline: none;
+                }
+            }
+        }
+    }
+}
