@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+graphene = "*"
+flask-graphql = "*"
+gunicorn = "*"
+flask-cors = "*"
+flask-sockets = "*"
+graphql-ws = "*"
+rx = "*"
+nicelog = "*"
+redis = "*"
+sqlalchemy = "*"
+"psycopg2" = "*"
+alembic = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.6"
+
+[scripts]
+start = "pipenv run python -m graphqlbin run -p 5001 --debugger --reload"

@@ -1,0 +1,25 @@
+version: '2'
+services:
+
+  # WARNING: DO NOT name this just "postgres" or it will cause things
+  # to break, for some reason.
+  yawc-db:
+    image: postgres:10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ''
+      POSTGRES_DB: 'yawc'
+    volumes:
+      - yawc-db-pgdata:/var/lib/postgresql/data
+    ports:
+      # HOST:CONTAINER
+      - "127.0.0.1:5432:5432"
+
+  yawc-redis:
+    image: redis:4
+    ports:
+      # HOST:CONTAINER
+      - "127.0.0.1:6379:6379"
+
+volumes:
+  yawc-db-pgdata:
