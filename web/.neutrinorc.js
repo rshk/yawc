@@ -73,7 +73,9 @@ module.exports = {
         ['@neutrinojs/eslint', {
             eslint: {
                 plugins: ['import', 'flowtype', 'jsx-a11y', 'react'],
-                rules: {},
+                rules: {
+                    semi: ['error', 'always'],
+                },
                 baseConfig: {extends: ['eslint-config-react-app']},
             },
         }],
