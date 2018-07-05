@@ -94,16 +94,31 @@ const SUBSCRIBE_MESSAGES = gql`
 `;
 
 
-function ChatMessages({channel}) {
-    return <div className={styles.ChatMessages}>
-        <div style={{textAlign:'center',borderBottom:'solid 1px #ddd'}}>
-            This is the beginning of chat history for #{channel}
-        </div>
-        <Query query={QUERY_MESSAGES} variables={{channel}} fetchPolicy="cache-and-network">
-            {props => <MessagesList channel={channel} {...props} />}
-        </Query>
-    </div>;
+class ChatMessages extends React.Component {
+    render() {
+        const {channel} = this.props;
+        const _ref = el => {
+            this._ref = el;
+        };
+        return <div className={styles.ChatMessages} ref={_ref}>
+            <div style={{textAlign:'center',borderBottom:'solid 1px #ddd'}}>
+                This is the beginning of chat history for #{channel}
+            </div>
+            <Query query={QUERY_MESSAGES} variables={{channel}} fetchPolicy="cache-and-network">
+                {props => <MessagesList channel={channel} {...props}
+                                        onUpdate={this.scrollToBottom.bind(this)} />}
+            </Query>
+        </div>;
+    }
+
+    scrollToBottom() {
+        if (this._ref) {
+            const el = this._ref;
+            el.scrollTo(0, el.scrollHeight);
+        }
+    }
 }
+
 
 
 class MessagesList extends React.Component {
@@ -154,6 +169,15 @@ class MessagesList extends React.Component {
         if (this.unsubscribe) {
             this.unsubscribe();
         }
+    }
+
+    componentDidUpdate() {
+        console.log('++++++ DID UPDATE +++++');
+        this.props.onUpdate();
+        // if (this._ref) {
+        //     const el = this._ref;
+        //     el.scrollTo(0, el.scrollHeight);
+        // }
     }
 }
 
