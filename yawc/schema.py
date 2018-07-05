@@ -3,7 +3,6 @@ from datetime import datetime
 
 import graphene
 from rx import Observable
-from werkzeug.exceptions import BadRequest, default_exceptions
 from yawc.auth import get_token_for_credentials
 
 from .queue import get_watch_observable, send_message
@@ -32,10 +31,15 @@ class Query(graphene.ObjectType):
         channel=graphene.String(required=True))
 
     def resolve_messages(self, info, channel):
-        user = User(name='Hello')
+        user = info.context.auth_info.user
+
         return Messages(edges=[
-            Message(id=1, timestamp=datetime.utcnow(),
-                    channel='hello', text='It works!', user=user),
+            Message(id=1,
+                    timestamp=datetime.utcnow(),
+                    channel=channel,
+                    text='Hello, {}! Welcome to #{}.'
+                    .format(user.name, channel),
+                    user=User(name='Chat bot')),
         ])
 
 

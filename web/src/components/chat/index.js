@@ -1,6 +1,8 @@
 import React from 'react';
 import {NavLink} from 'react-router-dom';
 import styles from './index.scss';
+import gql from 'graphql-tag';
+import {Query, Mutation} from 'react-apollo';
 
 
 export default function ChatUI({channel}) {
@@ -43,7 +45,7 @@ function ChannelSelector() {
 
 function ChatChannel({channel}) {
     if (!channel) {
-        return <div className={styles.ChatChannel} />;
+        return <div className={styles.ChatChannel} key={channel} />;
     }
 
     return <div className={styles.ChatChannel}>
@@ -53,9 +55,42 @@ function ChatChannel({channel}) {
 }
 
 
+const QUERY_MESSAGES = gql`
+    query getMessages($channel: String!) {
+        messages(channel: $channel) {
+            edges {
+                id
+                timestamp
+                channel
+                user {
+                    name
+                }
+                text
+            }
+        }
+    }
+`;
+
+
 function ChatMessages({channel}) {
-    return <div className={styles.ChatMessages}>
-        Chat messages for #{channel}
+    return <div key={channel} className={styles.ChatMessages}>
+        <Query query={QUERY_MESSAGES} variables={{channel}} fetchPolicy="cache-and-network">
+            {({loading, error, data}) => {
+                 if (loading) {
+                     return <div>Loading...</div>;
+                 }
+                 if (error) {
+                     return <div>{`Error: ${error}`}</div>;
+                 }
+                 return <div>{
+                     data.messages.edges.map(({id, timestamp, user, text}) =>
+                         <div key={id}>
+                             <strong>{user.name}:</strong> {text}
+                         </div>
+                     )}
+                 </div>;
+            }}
+        </Query>
     </div>;
 }
 
