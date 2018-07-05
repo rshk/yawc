@@ -18,6 +18,8 @@ sqlalchemy = "*"
 "psycopg2" = "*"
 alembic = "*"
 pytz = "*"
+pyjwt = "*"
+bcrypt = "*"
 
 [dev-packages]
 

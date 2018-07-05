@@ -4,6 +4,7 @@ from datetime import datetime
 import graphene
 from rx import Observable
 from werkzeug.exceptions import BadRequest, default_exceptions
+from yawc.auth import get_token_for_credentials
 
 from .queue import get_watch_observable, send_message
 
@@ -25,24 +26,6 @@ class Messages(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-
-    # hello = graphene.String(
-    #     name=graphene.String(
-    #         default_value="stranger",
-    #         description='Name of the person to be greeted'),
-    #     description='Returns a greeting for the specified person')
-
-    # def resolve_hello(self, info, name):
-    #     return 'Hello ' + name
-
-    # error = graphene.String(
-    #     code=graphene.Int(default_value=400),
-    #     description='Returns the specified HTTP error')
-
-    # def resolve_error(self, info, code):
-    #     if code not in default_exceptions:
-    #         raise BadRequest('Unsupported error code {}'.format(code))
-    #     raise default_exceptions[code]
 
     messages = graphene.Field(
         Messages,
@@ -69,8 +52,25 @@ class PostMessage(graphene.Mutation):
         return PostMessage(ok=True)
 
 
+class Authenticate(graphene.Mutation):
+
+    class Arguments:
+        email = graphene.String(required=True)
+        password = graphene.String(required=True)
+
+    ok = graphene.Boolean()
+    token = graphene.String()
+
+    def mutate(self, info, email, password):
+        token = get_token_for_credentials(email, password)
+        if token:
+            return Authenticate(ok=True, token=token.decode())
+        return Authenticate(ok=False, token=None)
+
+
 class Mutations(graphene.ObjectType):
     post_message = PostMessage.Field()
+    auth = Authenticate.Field()
 
 
 class RandomType(graphene.ObjectType):

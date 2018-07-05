@@ -1,3 +1,3 @@
-from yawc.app import cli
+from yawc.cli import cli
 
 cli()

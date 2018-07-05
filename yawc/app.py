@@ -1,16 +1,14 @@
 import logging
 import sys
 
-import click
-
 from flask import Flask, redirect
-from flask.cli import FlaskGroup
 from flask_cors import CORS
-from flask_graphql import GraphQLView
 from flask_sockets import Sockets
 from gevent import monkey
 from graphql_ws.gevent import GeventSubscriptionServer
 
+from .auth import load_auth_info
+from .graphqlview import GraphQLView
 from .schema import schema
 
 monkey.patch_all()
@@ -31,13 +29,13 @@ def create_app():
 
     app.add_url_rule(
         '/graphql',
-        view_func=(GraphQLView.as_view(
+        view_func=load_auth_info(GraphQLView.as_view(
             'graphql', schema=schema, graphiql=True)))
 
     # Optional, for adding batch query support (used in Apollo-Client)
     app.add_url_rule(
         '/graphql/batch',
-        view_func=(GraphQLView.as_view(
+        view_func=load_auth_info(GraphQLView.as_view(
             'graphql-batch', schema=schema, batch=True)))
 
     # RESTful methods for authentication -----------------------------
@@ -80,11 +78,6 @@ def create_app():
     return app
 
 
-@click.group(cls=FlaskGroup, create_app=create_app)
-def cli():
-    pass
-
-
 def setup_logging():
     from nicelog.formatters import Colorful
     handler = logging.StreamHandler(sys.stderr)
@@ -106,18 +99,3 @@ def setup_logging():
     (logging
      .getLogger('Rx')
      .setLevel(logging.INFO))
-
-
-@cli.command(name='run')
-@click.option('--host', '-h', default='127.0.0.1')
-@click.option('--port', '-p', type=int, default=5000)
-def cmd_run(host, port):
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-
-    setup_logging()
-
-    app = create_app()
-    server = pywsgi.WSGIServer(
-        (host, port), app, handler_class=WebSocketHandler, log=logger)
-    server.serve_forever()
