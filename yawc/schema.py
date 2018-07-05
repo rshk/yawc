@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 import graphene
 from rx import Observable
@@ -7,9 +8,16 @@ from werkzeug.exceptions import BadRequest, default_exceptions
 from .queue import get_watch_observable, send_message
 
 
+class User(graphene.ObjectType):
+    name = graphene.String()
+
+
 class Message(graphene.ObjectType):
+    id = graphene.String()
+    timestamp = graphene.DateTime()
     text = graphene.String()
     channel = graphene.String()
+    user = graphene.Field(User)
 
 
 class Messages(graphene.ObjectType):
@@ -18,28 +26,34 @@ class Messages(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
 
-    hello = graphene.String(
-        name=graphene.String(
-            default_value="stranger",
-            description='Name of the person to be greeted'),
-        description='Returns a greeting for the specified person')
+    # hello = graphene.String(
+    #     name=graphene.String(
+    #         default_value="stranger",
+    #         description='Name of the person to be greeted'),
+    #     description='Returns a greeting for the specified person')
 
-    def resolve_hello(self, info, name):
-        return 'Hello ' + name
+    # def resolve_hello(self, info, name):
+    #     return 'Hello ' + name
 
-    error = graphene.String(
-        code=graphene.Int(default_value=400),
-        description='Returns the specified HTTP error')
+    # error = graphene.String(
+    #     code=graphene.Int(default_value=400),
+    #     description='Returns the specified HTTP error')
 
-    def resolve_error(self, info, code):
-        if code not in default_exceptions:
-            raise BadRequest('Unsupported error code {}'.format(code))
-        raise default_exceptions[code]
+    # def resolve_error(self, info, code):
+    #     if code not in default_exceptions:
+    #         raise BadRequest('Unsupported error code {}'.format(code))
+    #     raise default_exceptions[code]
 
-    messages = graphene.Field(Messages, channel=graphene.String())
+    messages = graphene.Field(
+        Messages,
+        channel=graphene.String(required=True))
 
     def resolve_messages(self, info, channel):
-        return Messages(edges=[Message(text='Initial message')])
+        user = User(name='Hello')
+        return Messages(edges=[
+            Message(id=1, timestamp=datetime.utcnow(),
+                    channel='hello', text='It works!', user=user),
+        ])
 
 
 class PostMessage(graphene.Mutation):
