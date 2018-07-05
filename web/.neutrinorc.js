@@ -1,3 +1,6 @@
+const {EnvironmentPlugin} = require('webpack');
+
+
 module.exports = {
     use: [
         '@neutrinojs/standardjs',

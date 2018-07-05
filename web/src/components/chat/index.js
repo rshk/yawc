@@ -37,7 +37,7 @@ function ChannelSelector() {
             <NavLink key={channel} to={`/chat/${channel}`} className="nav-link nav-item">
                 #{channel}
             </NavLink>)}
-    </div>
+    </div>;
 }
 
 
@@ -49,7 +49,7 @@ function ChatChannel({channel}) {
     return <div className={styles.ChatChannel}>
         <ChatMessages channel={channel} />
         <ChatInputBar channel={channel} />
-    </div>
+    </div>;
 }
 
 
@@ -74,12 +74,12 @@ class ChatInputBar extends React.Component {
             if (el) {
                 el.focus();
             };
-        }
+        };
         return <div className={styles.ChatInputBar}>
             <form onSubmit={this._onSubmit.bind(this)}>
                 <input type="text" value={this.state.text} onChange={_onTextChange} ref={_ref} />
             </form>
-        </div>
+        </div>;
     }
 
     _onSubmit(evt) {
