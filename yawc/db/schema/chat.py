@@ -10,6 +10,6 @@ MessagesTable = Table(
     Column('timestamp', DateTime(timezone=True), default=utcnow,
            nullable=False),
     Column('user_id', BigInteger, ForeignKey('users.id')),
-    Column('channel', Text, index=True, unique=True, nullable=False),
-    Column('text', Text, index=True, unique=True, nullable=False),
+    Column('channel', Text, index=True, nullable=False),
+    Column('text', Text, index=True, nullable=False),
 )

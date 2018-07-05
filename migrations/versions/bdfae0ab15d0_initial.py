@@ -1,7 +1,7 @@
 """Initial
 
 Revision ID: bdfae0ab15d0
-Revises: 
+Revises:
 Create Date: 2018-07-05 14:49:37.384908
 
 """
@@ -38,8 +38,8 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_messages_channel'), 'messages', ['channel'], unique=True)
-    op.create_index(op.f('ix_messages_text'), 'messages', ['text'], unique=True)
+    op.create_index(op.f('ix_messages_channel'), 'messages', ['channel'])
+    op.create_index(op.f('ix_messages_text'), 'messages', ['text'])
     # ### end Alembic commands ###
 
 

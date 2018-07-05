@@ -9,7 +9,7 @@ from rx import Observable
 logger = logging.getLogger(__name__)
 
 REDIS_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379'
-REDIS_CHAN_MESSAGES = 'messages'
+REDIS_CHAN_MESSAGES = 'messages'  # Todo use one redis channel per channel?
 
 
 class RedisPubsubObservable:
@@ -60,9 +60,14 @@ class RedisPubsubObservable:
 messages_queue = RedisPubsubObservable(REDIS_URL, REDIS_CHAN_MESSAGES)
 
 
-def send_message(channel, text):
-    logger.debug('SEND MSG [%s]: %s', channel, text)
-    messages_queue.publish({'channel': channel, 'text': text})
+def send_message(message):
+    messages_queue.publish({
+        'id': message.id,
+        # 'timestamp': message.timestamp,
+        # 'user_id': message.user_id,
+        'channel': message.channel,
+        'text': message.text,
+    })
 
 
 def get_watch_observable(channel):
