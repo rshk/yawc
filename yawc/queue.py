@@ -1,10 +1,16 @@
 import json
 import logging
 import os
+import threading
 import time
 
+import gevent
 import redis as Redis
+from gevent import monkey
 from rx import Observable
+
+monkey.patch_all()
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,8 +59,41 @@ class RedisPubsubObservable:
                 yield data
 
     def get_observable(self):
-        items = self.watch()
-        return Observable.from_iterable(items)
+        # items = self.watch()
+        # return Observable.from_iterable(items)
+
+        logger.debug('GET OBSERVABLE [chan: {}]'.format(self._redis_channel))
+
+        def listen_to_redis_async(observable):
+
+            logger.debug('LISTEN TO REDIS ASYNC')
+
+            def thread_callback():
+
+                logger.debug('THREAD CALLBACK STARTED')
+
+                redis = self._connect()
+                pubsub = redis.pubsub()
+                pubsub.subscribe(self._redis_channel)
+
+                for m in pubsub.listen():
+
+                    if m['type'] != 'message':
+                        logger.debug('REDIS PUBSUB: %s', repr(m))
+                        continue
+
+                    logger.debug('REDIS MESSAGE %s', repr(m))
+                    data = json.loads(m['data'])
+                    observable.on_next(data)
+                    logger.debug('====> SENT %s', repr(data))
+
+                logger.debug('THREAD CALLBACK FINISHED')
+
+            t = threading.Thread(target=thread_callback)
+            t.setDaemon(True)
+            t.start()
+
+        return Observable.create(listen_to_redis_async)
 
 
 messages_queue = RedisPubsubObservable(REDIS_URL, REDIS_CHAN_MESSAGES)

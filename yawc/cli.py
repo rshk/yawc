@@ -27,6 +27,7 @@ def cmd_run(host, port):
     setup_logging()
 
     app = create_app()
+    app.debug = True
     server = pywsgi.WSGIServer(
         (host, port), app, handler_class=WebSocketHandler, log=logger)
     server.serve_forever()

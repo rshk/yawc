@@ -124,7 +124,7 @@ class ChatMessages extends React.Component {
 class MessagesList extends React.Component {
 
     render() {
-        const {loading, error, data} = this.props;
+        const {loading, error, data, channel} = this.props;
 
         if (loading) {
             return <div>Loading...</div>;
@@ -132,7 +132,7 @@ class MessagesList extends React.Component {
         if (error) {
             return <div>{`Error: ${error}`}</div>;
         }
-        return <div>{
+        return <div key={channel}>{
             data.messages.edges.map((props) =>
                 <ChatMessage key={props.id} {...props} />
             )}
@@ -172,12 +172,7 @@ class MessagesList extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log('++++++ DID UPDATE +++++');
         this.props.onUpdate();
-        // if (this._ref) {
-        //     const el = this._ref;
-        //     el.scrollTo(0, el.scrollHeight);
-        // }
     }
 }
 
@@ -237,14 +232,4 @@ class ChatInputBar extends React.Component {
                 }
             });
     }
-}
-
-
-function FuckingClock() {
-    return <Subscription subscription={SUBSCRIBE_MESSAGES}
-                         variables={{channel:'hello'}}>
-        {(props) => (
-            <h4>Shite: {JSON.stringify(props)}</h4>
-        )}
-    </Subscription>;
 }

@@ -7,6 +7,7 @@ from rx import Observable
 from yawc.auth import get_token_for_credentials
 from yawc.db.query.chat import get_message_by_id, list_messages, post_message
 from yawc.db.query.user import get_user
+from yawc.utils.dates import utcnow
 
 from .queue import get_watch_observable, send_message
 
@@ -130,6 +131,21 @@ class Subscription(graphene.ObjectType):
         Message, channel=graphene.String(required=True))
 
     def resolve_new_messages(root, info, channel):
+        logger.info('----- RESOLVE NEW MESSAGES called: %s %s %s',
+                    repr(root), repr(info), channel)
+
+        # return (
+        #     Observable
+        #     .interval(1000)
+        #     .map(lambda i: Message(
+        #         id=100000 + i,
+        #         channel=channel,
+        #         text='Message {}, in {}'.format(i, channel),
+        #         user=User(name='Bot'),
+        #         timestamp=utcnow(),
+        #     ))
+        # )
+
         return (
             get_watch_observable(channel)
             # Observable.interval(1000)

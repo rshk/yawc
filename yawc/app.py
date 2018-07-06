@@ -66,7 +66,7 @@ def create_app():
     app.app_protocol = lambda environ_path_info: 'graphql-ws'
     subscription_server = GeventSubscriptionServer(schema)
 
-    @sockets.route('/graphql')
+    @sockets.route('/subscriptions')
     def echo_socket(ws):
         subscription_server.handle(ws)
         return []
