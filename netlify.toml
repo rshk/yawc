@@ -4,4 +4,4 @@
     command = "yarn build"
 
 [build.environment]
-    API_URL = "https://yawc.herokuapp.com/graphql"
+    API_URL = "https://yawc-api.reinvsw.com/graphql"
