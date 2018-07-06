@@ -113,11 +113,12 @@ class Subscription(graphene.ObjectType):
         Message, channel=graphene.String(required=True))
 
     def resolve_new_messages(root, info, channel):
-        logger.info('----- RESOLVE NEW MESSAGES called: %s %s %s',
-                    repr(root), repr(info), channel)
+        # logger.debug('SUBS newMessages [user: %s]', repr(user))
 
-        # FIXME check authorization!
-        # Can we access HTTP headers?
+        user = info.context.auth_info.user
+
+        if not user:
+            raise Unauthorized()
 
         return (
             get_watch_observable(channel)

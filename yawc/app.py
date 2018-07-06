@@ -7,7 +7,7 @@ from flask_sockets import Sockets
 from gevent import monkey
 from graphql_ws.gevent import GeventSubscriptionServer
 
-from .auth import load_auth_info
+from .auth import load_auth_info, get_socket_context
 from .graphqlview import GraphQLView
 from .schema import schema
 
@@ -64,10 +64,33 @@ def create_app():
 
     sockets = Sockets(app)
     app.app_protocol = lambda environ_path_info: 'graphql-ws'
-    subscription_server = GeventSubscriptionServer(schema)
+
+    class SubscriptionServer(GeventSubscriptionServer):
+        def on_connect(self, connection_context, payload):
+            logger.debug('SubscriptionServer.on_connect(%s, %s)',
+                         repr(connection_context), repr(payload))
+            # TODO: parse authToken from payload (if available);
+            # TODO: how to set context for the subscription function??
+            connection_context.auth_info = get_socket_context(payload)
+
+        def get_graphql_params(self, connection_context, payload):
+            _params = super().get_graphql_params(connection_context, payload)
+            return {
+                **_params,
+                # 'context': get_socket_context(payload),
+
+                # FIXME: looks like this has been renamed to context
+                # in later versions of graphql-core..?
+                'context_value': connection_context.auth_info,
+                # 'HELLO': 'WORLD',
+            }
+
+    subscription_server = SubscriptionServer(schema)
 
     @sockets.route('/subscriptions')
     def echo_socket(ws):
+        # context = get_socket_context(ws)
+        # logger.debug('Socket: handling %s (%s)', repr(ws), repr(context))
         subscription_server.handle(ws)
         return []
 

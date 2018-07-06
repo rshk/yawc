@@ -68,7 +68,10 @@ const authLink = setContext((_, {headers: extraHeaders}) => {
 const wsLink = new WebSocketLink({
     uri: WEBSOCKET_URL,
     options: {
-        reconnect: true
+        reconnect: true,
+        connectionParams: {
+            authToken: getToken(),
+        },
     }
 });
 
