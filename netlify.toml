@@ -1,7 +1,7 @@
 [build]
-    # base    = ""
-    publish = "build"
+    base    = "web"
+    publish = "web/build"
     command = "yarn build"
 
 [build.environment]
-    API_URL = "https://graphqlbin.org/graphql"
+    API_URL = "https://yawc.herokuapp.com/graphql"
