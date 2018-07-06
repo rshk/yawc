@@ -1,9 +1,6 @@
 import logging
-import random
-from datetime import datetime
 
 import graphene
-from rx import Observable
 from yawc.auth import get_token_for_credentials
 from yawc.db.query.chat import get_message_by_id, list_messages, post_message
 from yawc.db.query.user import get_user
@@ -55,7 +52,7 @@ class Query(graphene.ObjectType):
 
         return Messages(edges=[
             Message(id=0,
-                    timestamp=datetime.utcnow(),
+                    timestamp=utcnow(),
                     channel=channel,
                     text='Hello, {}! Welcome to #{}.'
                     .format(user.name, channel),
