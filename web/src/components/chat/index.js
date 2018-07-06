@@ -2,7 +2,7 @@ import React from 'react';
 import {NavLink} from 'react-router-dom';
 import styles from './index.scss';
 import gql from 'graphql-tag';
-import {Query, Mutation, Subscription} from 'react-apollo';
+import {Query, Mutation} from 'react-apollo';
 import {DateTime} from 'luxon';
 
 
@@ -69,17 +69,6 @@ const QUERY_MESSAGES = gql`
         }
     }
 `;
-
-/*
- * const SUBSCRIBE_MESSAGES = gql`
- *     subscription newMessages($channel: String!) {
- *         message: messages(channel: $channel) {
- *             id
- *             text
- *         }
- *     }
- * `;
- *  */
 
 const SUBSCRIBE_MESSAGES = gql`
     subscription newMessages($channel: String!) {

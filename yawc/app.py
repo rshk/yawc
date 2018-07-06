@@ -47,19 +47,6 @@ def create_app():
     #         'WWWAuthenticate': 'Basic realm="Login Required"',
     #     })
 
-    # @app.route('/auth', methods=['POST'])
-    # def authenticate_user():
-    #     username = request.form['username']
-    #     password = request.form['password']
-    #     user = verify_credentials(username, password)
-
-    #     if user:
-    #         token = _create_user_jwt(user)
-    #         return json.dumps({'token': token.decode()}), 200, {
-    #             'Content-type': 'text/json'}
-
-    #     raise Unauthorized('Bad username / password')
-
     # Websockets -----------------------------------------------------
 
     sockets = Sockets(app)
@@ -69,20 +56,16 @@ def create_app():
         def on_connect(self, connection_context, payload):
             logger.debug('SubscriptionServer.on_connect(%s, %s)',
                          repr(connection_context), repr(payload))
-            # TODO: parse authToken from payload (if available);
-            # TODO: how to set context for the subscription function??
-            connection_context.auth_info = get_socket_context(payload)
+
+            # TODO: is there a better way to pass context down, without
+            # having to inject stuff into the connection context class??
+            connection_context.auth_context = get_socket_context(payload)
 
         def get_graphql_params(self, connection_context, payload):
             _params = super().get_graphql_params(connection_context, payload)
             return {
                 **_params,
-                # 'context': get_socket_context(payload),
-
-                # FIXME: looks like this has been renamed to context
-                # in later versions of graphql-core..?
-                'context_value': connection_context.auth_info,
-                # 'HELLO': 'WORLD',
+                'context_value': connection_context.auth_context,
             }
 
     subscription_server = SubscriptionServer(schema)
