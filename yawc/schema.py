@@ -9,6 +9,7 @@ from yawc.db.query.chat import get_message_by_id, list_messages, post_message
 from yawc.db.query.user import get_user
 from yawc.utils.dates import utcnow
 
+from .auth import Unauthorized
 from .queue import get_watch_observable, send_message
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,9 @@ class Query(graphene.ObjectType):
     def resolve_messages(self, info, channel):
         user = info.context.auth_info.user
 
+        if not user:
+            raise Unauthorized()
+
         return Messages(edges=[
             Message(id=0,
                     timestamp=datetime.utcnow(),
@@ -70,11 +74,10 @@ class PostMessage(graphene.Mutation):
     message_id = graphene.Int()
 
     def mutate(self, info, channel, text):
-        if not info.context.auth_info:
-            return None
-
         user = info.context.auth_info.user
-        assert user is not None
+
+        if not user:
+            raise Unauthorized()
 
         message = post_message(channel, text, user_id=user.id)
         send_message(message)
@@ -109,24 +112,6 @@ class RandomType(graphene.ObjectType):
 
 class Subscription(graphene.ObjectType):
 
-    count_seconds = graphene.Int(up_to=graphene.Int())
-
-    def resolve_count_seconds(root, info, up_to=5):
-        return (
-            Observable
-            .interval(1000)
-            .map(lambda i: "{0}".format(i))
-            .take_while(lambda i: int(i) <= up_to))
-
-    # random_int = graphene.Field(RandomType)
-
-    # def resolve_random_int(root, info):
-    #     return (
-    #         Observable
-    #         .interval(1000)
-    #         .map(lambda i:
-    #              RandomType(seconds=i, random_int=random.randint(0, 500))))
-
     new_messages = graphene.Field(
         Message, channel=graphene.String(required=True))
 
@@ -134,54 +119,12 @@ class Subscription(graphene.ObjectType):
         logger.info('----- RESOLVE NEW MESSAGES called: %s %s %s',
                     repr(root), repr(info), channel)
 
-        # return (
-        #     Observable
-        #     .interval(1000)
-        #     .map(lambda i: Message(
-        #         id=100000 + i,
-        #         channel=channel,
-        #         text='Message {}, in {}'.format(i, channel),
-        #         user=User(name='Bot'),
-        #         timestamp=utcnow(),
-        #     ))
-        # )
+        # FIXME check authorization!
+        # Can we access HTTP headers?
 
         return (
             get_watch_observable(channel)
-            # Observable.interval(1000)
-
-            .map(lambda msg: get_message_by_id(msg['id']))
-
-            # .map(lambda msg: Message(
-            #     id=msg['id'],
-            #     channel=msg['channel'],
-            #     text=msg['text']))
-        )
-
-#
-#     messages = graphene.Field(Message, channel=graphene.String())
-#
-#     def resolve_messages(root, info, channel):
-#         # return Observable.interval(1000)
-#         logger.warning('=========================== WHAT')
-#
-#         logger.info('===== HERE ======')
-#
-#         stuff = (
-#             get_watch_observable(channel)
-#             # Observable.interval(1000)
-#
-#             .map(lambda msg: Message(**get_message_by_id(msg['id']))))
-#
-#         logger.info('===== HERE AGAIN ======')
-#
-#         return stuff
-#
-#             # .map(lambda msg: Message(
-#             #     id=msg['id'],
-#             #     user_id=msg['user_id'],
-#             #     channel=msg['channel'],
-#             #     text=msg['text']))
+            .map(lambda msg: get_message_by_id(msg['id'])))
 
 
 schema = graphene.Schema(
