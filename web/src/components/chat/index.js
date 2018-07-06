@@ -168,9 +168,9 @@ class MessagesList extends React.Component {
 
 function ChatMessage({id, timestamp, user, text}) {
     const ts = DateTime.fromISO(timestamp);
-    return <div>
+    return <div className={styles.ChatMessage}>
         <small>{ts.toLocaleString(DateTime.DATETIME_FULL)}</small>{' '}
-        <strong>{user ? user.name : '???'}</strong> {text}
+        <strong>{user ? user.name : '???'}:</strong> {text}
     </div>;
 }
 
