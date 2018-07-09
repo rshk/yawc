@@ -4,7 +4,7 @@ import os
 import threading
 import time
 
-import gevent
+# import gevent
 import redis as Redis
 from gevent import monkey
 from rx import Observable
@@ -18,6 +18,9 @@ REDIS_URL = os.environ.get('REDIS_URL') or 'redis://localhost:6379'
 REDIS_CHAN_MESSAGES = 'messages'  # Todo use one redis channel per channel?
 
 
+redis_client = Redis.from_url(REDIS_URL)
+
+
 class RedisPubsubObservable:
 
     def __init__(self, redis_url, redis_channel):
@@ -27,7 +30,9 @@ class RedisPubsubObservable:
     def _connect(self):
         """Make sure connection is not shared across gevent thread thingies
         """
-        return Redis.from_url(self._redis_url)
+        # return Redis.from_url(self._redis_url)
+        assert self._redis_url == REDIS_URL
+        return redis_client
 
     def publish(self, data):
         redis = self._connect()
