@@ -53,7 +53,7 @@ def cmd_user_create(email, name, password):
 @grp_user.command(name='list')
 def cmd_user_list():
     for row in list_users():
-        print('{} {}'.format(row.id, row.username))
+        print('{} {}'.format(row.id, row.email))
 
 
 @grp_user.command(name='set-password')
