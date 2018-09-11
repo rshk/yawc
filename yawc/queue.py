@@ -26,6 +26,7 @@ class RedisPubsubObservable:
     def __init__(self, redis_url, redis_channel):
         self._redis_url = redis_url
         self._redis_channel = redis_channel
+        self._observable = None
 
     def _connect(self):
         """Make sure connection is not shared across gevent thread thingies
@@ -38,40 +39,21 @@ class RedisPubsubObservable:
         redis = self._connect()
         redis.publish(self._redis_channel, json.dumps(data))
 
-    def watch(self):
-        """Watch for messages in the queue.
-
-        Not that we cannot use pubsub.listen() as that would block the
-        thread, preventing gevent context-switches.
-
-        Instead, we just poll for messages and sleep() in between..
-        """
-
-        redis = self._connect()
-        pubsub = redis.pubsub()
-        pubsub.subscribe(self._redis_channel)
-
-        while True:
-            msg = pubsub.get_message()
-            if not msg:
-                # Be nice on the system
-                time.sleep(.001)
-                continue
-
-            if msg['type'] == 'message':
-                logger.debug('RECV MSG: %s', repr(msg))
-                data = json.loads(msg['data'])
-                yield data
-
     def get_observable(self):
+        logger.debug('GET OBSERVABLE [chan: {}]'
+                     .format(self._redis_channel))
+        if not self._observable:
+            logger.debug('Create new observable')
+            self._observable = self.create_observable()
+        return self._observable
+
+    def create_observable(self):
         # items = self.watch()
         # return Observable.from_iterable(items)
 
-        logger.debug('GET OBSERVABLE [chan: {}]'.format(self._redis_channel))
-
         def listen_to_redis_async(observable):
 
-            logger.debug('LISTEN TO REDIS ASYNC')
+            logger.debug('===> Starting Redis SUBSCRIBE thread')
 
             def thread_callback():
 
@@ -84,13 +66,13 @@ class RedisPubsubObservable:
                 for m in pubsub.listen():
 
                     if m['type'] != 'message':
-                        logger.debug('REDIS PUBSUB: %s', repr(m))
+                        logger.debug('<<< Redis pub/sub CTL: %s', repr(m))
                         continue
 
-                    logger.debug('REDIS MESSAGE %s', repr(m))
+                    logger.debug('<<< Redis pub/sub MSG: %s', repr(m))
                     data = json.loads(m['data'])
                     observable.on_next(data)
-                    logger.debug('====> SENT %s', repr(data))
+                    logger.debug('>>> Redis pub/sub sent: %s', repr(data))
 
                 logger.debug('THREAD CALLBACK FINISHED')
 
@@ -98,6 +80,10 @@ class RedisPubsubObservable:
             t.setDaemon(True)
             t.start()
 
+        # NOTE: the function will be called for every new subscriber,
+        # creating more and more threads listening to Redis.
+        # We actually want to somehow share events coming from the *one*
+        # thread attached to Redis...
         return Observable.create(listen_to_redis_async)
 
 
