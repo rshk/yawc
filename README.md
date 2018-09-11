@@ -32,7 +32,7 @@ Start API server:
 Start frontend server:
 
     cd web
-    yarn start
+    API_URL=http://localhost:5000/graphql yarn start
 
 
 Access the application by visiting http://localhost:8000
