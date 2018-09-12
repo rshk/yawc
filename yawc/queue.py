@@ -84,7 +84,10 @@ class RedisPubsubObservable:
         # creating more and more threads listening to Redis.
         # We actually want to somehow share events coming from the *one*
         # thread attached to Redis...
-        return Observable.create(listen_to_redis_async)
+        obs = Observable.create(listen_to_redis_async)
+        obs = obs.publish()
+        obs.connect()
+        return obs
 
 
 messages_queue = RedisPubsubObservable(REDIS_URL, REDIS_CHAN_MESSAGES)
